@@ -1,7 +1,5 @@
 export interface Env {
   DB: D1Database
-  GITHUB_CLIENT_ID: string
-  GITHUB_CLIENT_SECRET: string
 }
 
 export interface User {
@@ -34,13 +32,4 @@ export async function getCurrentUser(env: Env, request: Request): Promise<User |
   ).bind(session.user_id).first<User>()
 
   return user || null
-}
-
-export function setSessionCookie(token: string): string {
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()
-  return `session_token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${expires}`
-}
-
-export function clearSessionCookie(): string {
-  return 'session_token=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0'
 }

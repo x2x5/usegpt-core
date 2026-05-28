@@ -8,6 +8,7 @@ import { CreateSkillPage } from './pages/CreateSkillPage'
 import { EditSkillPage } from './pages/EditSkillPage'
 import { RankingPage } from './pages/RankingPage'
 import { UserProfilePage } from './pages/UserProfilePage'
+import { LoginPage } from './pages/LoginPage'
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: 'create', element: <CreateSkillPage /> },
       { path: 'ranking', element: <RankingPage /> },
       { path: 'user/:id', element: <UserProfilePage /> },
+      { path: 'login', element: <LoginPage /> },
     ],
   },
 ])

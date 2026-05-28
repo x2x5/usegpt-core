@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { reactToSkill } from '../../api/skills'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -11,7 +12,8 @@ interface Props {
 }
 
 export function LikeDislikeButton({ skillId, likeCount, dislikeCount, userReaction: initialReaction, onReactionChange }: Props) {
-  const { user, login } = useAuth()
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [userReaction, setUserReaction] = useState(initialReaction)
   const [likes, setLikes] = useState(likeCount)
   const [dislikes, setDislikes] = useState(dislikeCount)
@@ -19,7 +21,7 @@ export function LikeDislikeButton({ skillId, likeCount, dislikeCount, userReacti
 
   const handleReact = async (type: 'like' | 'dislike') => {
     if (!user) {
-      login()
+      navigate('/login')
       return
     }
     if (loading) return

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Comment } from '../../types/skill'
 import { getComments, addComment, deleteComment } from '../../api/skills'
 import { useAuth } from '../../hooks/useAuth'
@@ -9,7 +10,8 @@ interface Props {
 }
 
 export function CommentSection({ skillId }: Props) {
-  const { user, login } = useAuth()
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [content, setContent] = useState('')
@@ -23,7 +25,7 @@ export function CommentSection({ skillId }: Props) {
 
   const handleSubmit = async () => {
     if (!user) {
-      login()
+      navigate('/login')
       return
     }
     if (!content.trim() || submitting) return

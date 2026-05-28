@@ -119,6 +119,13 @@ export async function getMe(): Promise<{ user: User | null }> {
   return fetchApi('/auth/me')
 }
 
+export async function login(username: string): Promise<{ user: User }> {
+  return fetchApi('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username }),
+  })
+}
+
 export async function logout(): Promise<void> {
   return fetchApi('/auth/logout', { method: 'POST' })
 }
