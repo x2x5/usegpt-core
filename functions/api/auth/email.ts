@@ -31,7 +31,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'UseGPT <login@usegpt.top>',
+        from: 'UseGPT <onboarding@resend.dev>',
         to: [email],
         subject: '登录 UseGPT',
         html: `<div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:40px 20px;">
