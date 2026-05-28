@@ -126,6 +126,20 @@ export async function sendLoginEmail(email: string): Promise<{ success: boolean;
   })
 }
 
+export async function register(username: string, password: string): Promise<{ user: User }> {
+  return fetchApi('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+}
+
+export async function login(username: string, password: string): Promise<{ user: User }> {
+  return fetchApi('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+}
+
 export async function logout(): Promise<void> {
   return fetchApi('/auth/logout', { method: 'POST' })
 }
