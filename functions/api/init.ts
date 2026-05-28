@@ -9,6 +9,23 @@ CREATE TABLE IF NOT EXISTS categories (
   sort_order INTEGER DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  github_id TEXT UNIQUE NOT NULL,
+  username TEXT NOT NULL,
+  display_name TEXT,
+  avatar_url TEXT,
+  bio TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  expires_at TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS skills (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
@@ -16,21 +33,38 @@ CREATE TABLE IF NOT EXISTS skills (
   prompt_content TEXT NOT NULL,
   keywords TEXT,
   category_id INTEGER,
-  author_name TEXT DEFAULT 'Anonymous',
-  author_avatar TEXT,
+  user_id INTEGER REFERENCES users(id),
   suitable_models TEXT,
   usage_instructions TEXT,
   example_input TEXT,
   example_output TEXT,
   variables TEXT,
   like_count INTEGER DEFAULT 0,
+  dislike_count INTEGER DEFAULT 0,
   favorite_count INTEGER DEFAULT 0,
   comment_count INTEGER DEFAULT 0,
   copy_count INTEGER DEFAULT 0,
-  status TEXT DEFAULT 'approved',
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now')),
-  FOREIGN KEY (category_id) REFERENCES categories(id)
+  FOREIGN KEY (category_id) REFERENCES categories(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS reactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  skill_id INTEGER NOT NULL REFERENCES skills(id),
+  type TEXT NOT NULL CHECK(type IN ('like', 'dislike')),
+  created_at TEXT DEFAULT (datetime('now')),
+  UNIQUE(user_id, skill_id)
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  skill_id INTEGER NOT NULL REFERENCES skills(id),
+  content TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
 );
 `
 

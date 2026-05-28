@@ -1,53 +1,28 @@
-import type { Env } from '../env'
+import type { Env } from '../../env'
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { request, env } = context
-  const url = new URL(request.url)
-  const q = url.searchParams.get('q')?.trim() || ''
+  const url = new URL(context.request.url)
   const page = parseInt(url.searchParams.get('page') || '1')
   const pageSize = parseInt(url.searchParams.get('pageSize') || '20')
   const offset = (page - 1) * pageSize
 
-  if (!q) {
-    return Response.json({ data: [], total: 0, page, pageSize })
-  }
-
-  const likeParam = `%${q}%`
+  const db = context.env.DB
 
   const [rows, countResult] = await Promise.all([
-    env.DB.prepare(
-      `SELECT s.*, c.name as category_name,
-        u.username as author_username, u.avatar_url as author_avatar_url, u.display_name as author_display_name
+    db.prepare(
+      `SELECT s.*, c.name as category_name, u.username as author_username, u.avatar_url as author_avatar_url, u.display_name as author_display_name
        FROM skills s
        LEFT JOIN categories c ON s.category_id = c.id
        LEFT JOIN users u ON s.user_id = u.id
-       WHERE (
-         s.title LIKE ? OR
-         s.description LIKE ? OR
-         s.keywords LIKE ? OR
-         s.prompt_content LIKE ?
-       )
-       ORDER BY s.created_at DESC
+       ORDER BY s.dislike_count DESC
        LIMIT ? OFFSET ?`
-    )
-      .bind(likeParam, likeParam, likeParam, likeParam, pageSize, offset)
-      .all(),
-    env.DB.prepare(
-      `SELECT COUNT(*) as total FROM skills s
-       WHERE (
-         s.title LIKE ? OR
-         s.description LIKE ? OR
-         s.keywords LIKE ? OR
-         s.prompt_content LIKE ?
-       )`
-    )
-      .bind(likeParam, likeParam, likeParam, likeParam)
-      .first(),
+    ).bind(pageSize, offset).all(),
+    db.prepare('SELECT COUNT(*) as total FROM skills').first<{ total: number }>(),
   ])
 
   return Response.json({
-    data: rows.results?.map(mapSkill),
-    total: (countResult as { total: number })?.total || 0,
+    data: rows.results.map(mapSkill),
+    total: countResult?.total || 0,
     page,
     pageSize,
   })

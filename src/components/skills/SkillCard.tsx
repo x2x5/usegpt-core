@@ -18,11 +18,11 @@ export function SkillCard({ skill, onCopySuccess }: SkillCardProps) {
             {skill.title}
           </h3>
         </Link>
-        {skill.authorAvatar ? (
-          <img src={skill.authorAvatar} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
+        {skill.authorAvatarUrl ? (
+          <img src={skill.authorAvatarUrl} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
         ) : (
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white text-sm flex-shrink-0">
-            {skill.authorName.charAt(0)}
+            {(skill.authorUsername || '匿').charAt(0)}
           </div>
         )}
       </div>

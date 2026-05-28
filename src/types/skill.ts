@@ -6,20 +6,23 @@ export interface Skill {
   keywords: string[]
   categoryId: number | null
   categoryName?: string
-  authorName: string
-  authorAvatar: string | null
+  userId: number | null
+  authorUsername?: string
+  authorDisplayName?: string
+  authorAvatarUrl?: string
   suitableModels: string[]
   usageInstructions: string | null
   exampleInput: string | null
   exampleOutput: string | null
   variables: Variable[]
   likeCount: number
+  dislikeCount: number
   favoriteCount: number
   commentCount: number
   copyCount: number
-  status: string
   createdAt: string
   updatedAt: string
+  userReaction?: string | null
 }
 
 export interface Variable {
@@ -37,6 +40,35 @@ export interface Category {
   sortOrder: number
 }
 
+export interface User {
+  id: number
+  username: string
+  displayName: string | null
+  avatarUrl: string | null
+  bio: string | null
+}
+
+export interface UserProfile extends User {
+  createdAt: string
+  stats: {
+    skillCount: number
+    totalLikes: number
+  }
+}
+
+export interface Comment {
+  id: number
+  skillId: number
+  content: string
+  createdAt: string
+  user: {
+    id: number
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
+}
+
 export interface PaginatedResponse<T> {
   data: T[]
   total: number
@@ -44,4 +76,4 @@ export interface PaginatedResponse<T> {
   pageSize: number
 }
 
-export type SortOption = 'latest' | 'popular' | 'most_liked' | 'most_copied' | 'most_commented'
+export type SortOption = 'latest' | 'popular' | 'most_liked' | 'most_disliked' | 'most_copied' | 'most_commented'

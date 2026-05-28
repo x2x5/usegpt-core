@@ -9,6 +9,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'latest', label: '最新' },
   { value: 'popular', label: '最热' },
   { value: 'most_liked', label: '最多点赞' },
+  { value: 'most_disliked', label: '最多踩' },
   { value: 'most_copied', label: '最多复制' },
   { value: 'most_commented', label: '最多评论' },
 ]

@@ -3,20 +3,23 @@ import { useParams, Link } from 'react-router-dom'
 import type { Skill } from '../types/skill'
 import { getSkill } from '../api/skills'
 import { TagBadge } from '../components/ui/TagBadge'
-import { StatCounter } from '../components/ui/StatCounter'
 import { CopyButton } from '../components/skills/CopyButton'
 import { VariableInput } from '../components/skills/VariableInput'
+import { LikeDislikeButton } from '../components/skills/LikeDislikeButton'
+import { CommentSection } from '../components/skills/CommentSection'
 import { Toast } from '../components/ui/Toast'
 import { extractVariables, fillTemplate } from '../utils/template'
+import { useAuth } from '../hooks/useAuth'
 
 export function SkillDetailPage() {
   const { id } = useParams()
-  const [skill, setSkill] = useState<Skill | null>(null)
+  const { user } = useAuth()
+  const [skill, setSkill] = useState<(Skill & { userReaction: string | null }) | null>(null)
   const [loading, setLoading] = useState(true)
   const [toastVisible, setToastVisible] = useState(false)
   const [variableValues, setVariableValues] = useState<Record<string, string>>({})
 
-  useEffect(() => {
+  const fetchSkill = () => {
     if (id) {
       setLoading(true)
       getSkill(Number(id))
@@ -31,6 +34,10 @@ export function SkillDetailPage() {
         })
         .finally(() => setLoading(false))
     }
+  }
+
+  useEffect(() => {
+    fetchSkill()
   }, [id])
 
   if (loading) {
@@ -93,20 +100,41 @@ export function SkillDetailPage() {
         </div>
       )}
 
-      {/* Author & stats */}
+      {/* Author & actions */}
       <div className="flex items-center justify-between py-6 border-y border-gray-100 mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white">
-            {skill.authorName.charAt(0)}
-          </div>
-          <span className="font-medium text-gray-700">{skill.authorName}</span>
+          {skill.userId ? (
+            <Link to={`/user/${skill.userId}`} className="flex items-center gap-3">
+              <img
+                src={skill.authorAvatarUrl || `https://ui-avatars.com/api/?name=${skill.authorUsername}&background=random`}
+                alt={skill.authorUsername || ''}
+                className="w-10 h-10 rounded-full"
+              />
+              <span className="font-medium text-gray-700 hover:text-purple-600">
+                {skill.authorDisplayName || skill.authorUsername || '匿名用户'}
+              </span>
+            </Link>
+          ) : (
+            <>
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+              <span className="font-medium text-gray-500">匿名用户</span>
+            </>
+          )}
+          {user?.id === skill.userId && (
+            <Link
+              to={`/skills/${skill.id}/edit`}
+              className="ml-2 px-3 py-1 text-xs text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50"
+            >
+              编辑
+            </Link>
+          )}
         </div>
-        <div className="flex items-center gap-5">
-          <StatCounter icon="👍" count={skill.likeCount} />
-          <StatCounter icon="💬" count={skill.commentCount} />
-          <StatCounter icon="⭐" count={skill.favoriteCount} />
-          <StatCounter icon="📋" count={skill.copyCount} />
-        </div>
+        <LikeDislikeButton
+          skillId={skill.id}
+          likeCount={skill.likeCount}
+          dislikeCount={skill.dislikeCount}
+          userReaction={skill.userReaction}
+        />
       </div>
 
       {/* Variable inputs */}
@@ -189,9 +217,20 @@ export function SkillDetailPage() {
         </div>
       )}
 
+      {/* Comments */}
+      <div className="border-t border-gray-100 pt-8">
+        <CommentSection skillId={skill.id} />
+      </div>
+
       {/* Mobile fixed action bar */}
       <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-200 p-4 z-40">
         <div className="max-w-4xl mx-auto flex gap-3">
+          <LikeDislikeButton
+            skillId={skill.id}
+            likeCount={skill.likeCount}
+            dislikeCount={skill.dislikeCount}
+            userReaction={skill.userReaction}
+          />
           <CopyButton
             text={variables.length > 0 && allFilled ? generatedPrompt : skill.promptContent}
             skillId={skill.id}
