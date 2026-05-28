@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { User } from '../types/skill'
-import { getMe, logout as apiLogout, login as apiLogin } from '../api/skills'
+import { getMe, logout as apiLogout } from '../api/skills'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -18,11 +18,5 @@ export function useAuth() {
     setUser(null)
   }
 
-  const login = async (username: string) => {
-    const res = await apiLogin(username)
-    setUser(res.user)
-    return res
-  }
-
-  return { user, loading, login, logout }
+  return { user, loading, logout }
 }

@@ -119,10 +119,10 @@ export async function getMe(): Promise<{ user: User | null }> {
   return fetchApi('/auth/me')
 }
 
-export async function login(username: string): Promise<{ user: User }> {
-  return fetchApi('/auth/login', {
+export async function sendLoginEmail(email: string): Promise<{ success: boolean; message: string }> {
+  return fetchApi('/auth/email', {
     method: 'POST',
-    body: JSON.stringify({ username }),
+    body: JSON.stringify({ email }),
   })
 }
 
