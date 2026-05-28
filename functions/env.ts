@@ -33,3 +33,7 @@ export async function getCurrentUser(env: Env, request: Request): Promise<User |
 
   return user || null
 }
+
+export function clearSessionCookie(): string {
+  return 'session_token=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0'
+}
