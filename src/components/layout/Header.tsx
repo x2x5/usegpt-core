@@ -7,28 +7,8 @@ export function Header() {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [loginOpen, setLoginOpen] = useState(false)
-  const [loginUsername, setLoginUsername] = useState('')
-  const [loginError, setLoginError] = useState('')
-  const [loginLoading, setLoginLoading] = useState(false)
   const isHome = location.pathname === '/'
-  const { user, loading, login, logout } = useAuth()
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!loginUsername.trim() || loginLoading) return
-    setLoginLoading(true)
-    setLoginError('')
-    try {
-      await login(loginUsername.trim())
-      setLoginOpen(false)
-      setLoginUsername('')
-    } catch {
-      setLoginError('登录失败，请重试')
-    } finally {
-      setLoginLoading(false)
-    }
-  }
+  const { user, loading, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-100">
@@ -94,12 +74,12 @@ export function Header() {
             </>
           ) : (
             !loading && (
-              <button
-                onClick={() => setLoginOpen(true)}
+              <Link
+                to="/login"
                 className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-xl hover:bg-gray-800 transition-colors"
               >
                 登录
-              </button>
+              </Link>
             )
           )}
         </nav>
@@ -130,36 +110,8 @@ export function Header() {
               <button onClick={() => { logout(); setMobileMenuOpen(false) }} className="w-full py-3 text-base font-medium text-red-600 border border-red-200 rounded-xl">退出登录</button>
             </>
           ) : (
-            <button onClick={() => { setLoginOpen(true); setMobileMenuOpen(false) }} className="w-full py-3 text-base font-medium text-white bg-gray-900 rounded-xl">登录</button>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block w-full py-3 text-base font-medium text-white bg-gray-900 rounded-xl text-center">登录</Link>
           )}
-        </div>
-      )}
-
-      {/* Login modal */}
-      {loginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setLoginOpen(false)}>
-          <div className="bg-white rounded-2xl p-6 w-80 shadow-xl" onClick={e => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">登录 UseGPT</h2>
-            <form onSubmit={handleLogin}>
-              <input
-                type="text"
-                value={loginUsername}
-                onChange={e => setLoginUsername(e.target.value)}
-                placeholder="输入用户名"
-                autoFocus
-                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
-              />
-              {loginError && <p className="text-sm text-red-500 mb-2">{loginError}</p>}
-              <button
-                type="submit"
-                disabled={!loginUsername.trim() || loginLoading}
-                className="w-full py-2 text-sm font-medium text-white bg-purple-600 rounded-xl hover:bg-purple-700 disabled:opacity-50"
-              >
-                {loginLoading ? '登录中...' : '登录 / 注册'}
-              </button>
-              <p className="text-xs text-gray-400 mt-3 text-center">输入用户名即可，新用户自动注册</p>
-            </form>
-          </div>
         </div>
       )}
     </header>
